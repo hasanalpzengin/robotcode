@@ -7,6 +7,7 @@ import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.ui.ComponentWithEmptyText
 import javax.swing.JComponent
+import javax.swing.JCheckBox
 
 class RobotCodeRunConfigurationEditor : SettingsEditor<RobotCodeRunConfiguration>() {
     
@@ -20,12 +21,14 @@ class RobotCodeRunConfigurationEditor : SettingsEditor<RobotCodeRunConfiguration
             }
         }
     
+    private val attachDebuggerCheckbox = JCheckBox("Attach Python Debugger")
+    
     override fun resetEditorFrom(s: RobotCodeRunConfiguration) {
-        // TODO("Not yet implemented")
+        attachDebuggerCheckbox.isSelected = s.isAttachDebugger
     }
     
     override fun applyEditorTo(s: RobotCodeRunConfiguration) {
-        // TODO("Not yet implemented")
+        s.isAttachDebugger = attachDebuggerCheckbox.isSelected
     }
     
     override fun createEditor(): JComponent {
@@ -37,7 +40,7 @@ class RobotCodeRunConfigurationEditor : SettingsEditor<RobotCodeRunConfiguration
                 cell(environmentVariablesField.component).align(AlignX.FILL)
             }
             row("A&rguments:") { cell(argumentsField).align(AlignX.FILL) }
+            row { cell(attachDebuggerCheckbox) }
         }
     }
-    
 }

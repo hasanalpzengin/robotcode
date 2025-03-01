@@ -43,7 +43,6 @@ import java.net.SocketTimeoutException
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-
 class RobotCodeRunProfileState(private val config: RobotCodeRunConfiguration, environment: ExecutionEnvironment) :
     CommandLineState(environment), ProcessListener {
     
@@ -63,7 +62,6 @@ class RobotCodeRunProfileState(private val config: RobotCodeRunConfiguration, en
     val afterInitialize = Signal<Unit>()
     val afterConfigurationDone = Signal<Unit>()
     
-    
     init {
         debugClient.onTerminated.adviseEternal {
             if (socket.isConnected) socket.close()
@@ -77,7 +75,6 @@ class RobotCodeRunProfileState(private val config: RobotCodeRunConfiguration, en
         val profile =
             environment.runProfile as? RobotCodeRunConfiguration ?: throw CantRunException("Invalid run configuration")
         
-        // TODO: Add support for configurable paths
         val defaultPaths = arrayOf("--default-path", ".")
         
         val debug = environment.runner is RobotCodeDebugProgramRunner
@@ -96,6 +93,10 @@ class RobotCodeRunProfileState(private val config: RobotCodeRunConfiguration, en
             included.add(port.toString())
         }
         
+        if (config.isAttachDebugger) {
+            connection.add("--debugpy")
+        }
+        
         val commandLine = project.buildRobotCodeCommandLine(
             arrayOf(
                 *defaultPaths,
@@ -103,16 +104,17 @@ class RobotCodeRunProfileState(private val config: RobotCodeRunConfiguration, en
                 *connection.toTypedArray(),
                 *(if (!debug) arrayOf("--no-debug") else arrayOf()),
                 *(included.toTypedArray())
-            ), noColor = false // ,extraArgs = arrayOf("-v", "--log", "--log-level", "TRACE")
-        
+            ), noColor = false
         )
         
-        val handler = KillableColoredProcessHandler(commandLine) // handler.setHasPty(true)
+        if (config.isAttachDebugger) {
+            commandLine.environment.set("DEBUGPY_ADAPTER_ENDPOINTS", "127.0.0.1:$port")
+        }
+        
+        val handler = KillableColoredProcessHandler(commandLine)
         handler.putUserData(DEBUG_PORT, port)
         ProcessTerminatedListener.attach(handler)
         handler.addProcessListener(this)
-        
-        // RunContentManager.getInstance(project).showRunContent(environment.executor, handler)
         
         return handler
     }
@@ -126,7 +128,6 @@ class RobotCodeRunProfileState(private val config: RobotCodeRunConfiguration, en
         
         return result
     }
-    
     
     private fun createAndAttachConsoleInEDT(
         processHandler: ProcessHandler, executor: Executor
@@ -142,12 +143,11 @@ class RobotCodeRunProfileState(private val config: RobotCodeRunConfiguration, en
                     consoleProperties.state = this
                 }
                 
-                var splitterPropertyName = SMTestRunnerConnectionUtil.getSplitterPropertyName(TESTFRAMEWORK_NAME)
-                var consoleView = RobotCodeRunnerConsoleView(consoleProperties, splitterPropertyName)
+                val splitterPropertyName = SMTestRunnerConnectionUtil.getSplitterPropertyName(TESTFRAMEWORK_NAME)
+                val consoleView = RobotCodeRunnerConsoleView(consoleProperties, splitterPropertyName)
                 SMTestRunnerConnectionUtil.initConsoleView(consoleView, TESTFRAMEWORK_NAME)
                 consoleView.attachToProcess(processHandler)
                 consoleRef.set(consoleView)
-                // consoleRef.set(createAndAttachConsole("RobotCode", processHandler, consoleProperties))
                 propertiesRef.set(consoleProperties)
                 
             } catch (e: ExecutionException) {
@@ -192,7 +192,7 @@ class RobotCodeRunProfileState(private val config: RobotCodeRunConfiguration, en
     @OptIn(ExperimentalUuidApi::class) override fun startNotified(event: ProcessEvent) {
         runBlocking(Dispatchers.IO) {
             
-            var port = event.processHandler.getUserData(DEBUG_PORT) ?: throw CantRunException("No debug port found.")
+            val port = event.processHandler.getUserData(DEBUG_PORT) ?: throw CantRunException("No debug port found.")
             
             socket = tryConnectToServerWithTimeout("127.0.0.1", port, 10000, retryIntervalMillis = 100)
                 ?: throw CantRunException("Unable to establish connection to debug server.")
