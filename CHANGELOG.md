@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [1.0.2](https://github.com/robotcodedev/robotcode/compare/v1.0.1..v1.0.2) - 2025-03-07
+
+### Bug Fixes
+
+- **debugger:** Remove unnecessary environment variables for debugpy sessions ([08cba92](https://github.com/robotcodedev/robotcode/commit/08cba92302bf79be1a71c370aaf573f23be90b33))
+
+
+## [1.0.1](https://github.com/robotcodedev/robotcode/compare/v1.0.0..v1.0.1) - 2025-03-06
+
+### Bug Fixes
+
+- **language_server:** Improve range calculation for document symbols and add handling for negative ranges ([1db6978](https://github.com/robotcodedev/robotcode/commit/1db69786b3a926abd03a669b84058c41105ce1fb))
+
+
+### Documentation
+
+- Fixes some typos ([d149ae8](https://github.com/robotcodedev/robotcode/commit/d149ae830cea98a2556b11575bb30a52b006dcf1))
+- Add a separate document about support and contribution ([4da4a51](https://github.com/robotcodedev/robotcode/commit/4da4a51189f7869644932ac4afdb7ce7ec3e430f))
+
+
+## [1.0.0](https://github.com/robotcodedev/robotcode/compare/v0.109.6..v1.0.0) - 2025-03-05
+
+### Bug Fixes
+
+- **tmlang:** Recognize 2 or spaces between arguments to better work in intellj platform ([6198707](https://github.com/robotcodedev/robotcode/commit/6198707c7f22a9744dcad7a4e0d9bc6f64f46e4c))
+
+
+### Documentation
+
+- Update get started/configuration ([f8060e5](https://github.com/robotcodedev/robotcode/commit/f8060e53ba95007fea2a62c137dfc4c271086cab))
+
+
+### Features
+
+- **intellij:** Support for more semantic highlight tokens ([e48943b](https://github.com/robotcodedev/robotcode/commit/e48943b5fff6b296a4ddb510be5eb1cf144c2a4e))
+
+
 ## [0.109.6](https://github.com/robotcodedev/robotcode/compare/v0.109.5..v0.109.6) - 2025-02-28
 
 ### Bug Fixes

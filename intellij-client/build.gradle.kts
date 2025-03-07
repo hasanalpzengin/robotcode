@@ -204,6 +204,13 @@ tasks.withType<KotlinCompile> {
     prepareSandboxTask(prepareSandboxConfig)
 }
 
+@Suppress("unused") val runIdePyCharmCommunityEAP by intellijPlatformTesting.runIde.registering {
+    type = IntelliJPlatformType.PyCharmCommunity
+    version = "LATEST-EAP-SNAPSHOT"
+
+    prepareSandboxTask(prepareSandboxConfig)
+}
+
 @Suppress("unused") val runIdeIntellijIdeaC by intellijPlatformTesting.runIde.registering {
     type = IntelliJPlatformType.IntellijIdeaCommunity
 
